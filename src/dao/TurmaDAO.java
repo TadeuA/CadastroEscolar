@@ -110,9 +110,11 @@ public class TurmaDAO {
     }
 
     private void carregarVO(Turma dto, ResultSet rs)throws SQLException{
+        ProfessorDAO prof = null;
+        CursoDAO cur = null;
         dto.setId(rs.getInt("ID"));
-        dto.setProfessor(rs.getString("MATRICULA_PROFESSOR"));
-        dto.setCurso(rs.getString("ID_CURSO"));
+        dto.setProfessor(prof.getProfessorPorMatricula(Integer.parseInt(rs.getString("MATRICULA_PROFESSOR"))));
+        dto.setCurso(cur.getCursoPorId(Integer.parseInt(rs.getString("ID_CURSO"))));
        
     }
 }

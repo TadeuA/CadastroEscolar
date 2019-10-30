@@ -6,6 +6,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  *
@@ -52,8 +53,16 @@ public class Turma {
     /**
      * @return the alunos
      */
-    public Aluno getAlunos(int index) {
-        return alunos.get(index);
+    public Aluno getAlunos(int matricula) {
+        Iterator it=alunos.iterator();
+        while(it.hasNext()) {
+            Aluno aluno = (Aluno) it;
+             if(aluno.getMatricula() == matricula) {
+                 return aluno;
+             } 
+             it.next();
+        }
+        return null;
     }
 
     /**

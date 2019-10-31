@@ -102,10 +102,8 @@ public class TurmaDAO {
     public List<Turma> findAll() throws Exception{
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        String SQL_STATEMENT ="Select ID, MATRICULA_PROFESSOR, ID_CURSO, ALUNO.*" +
-                " from TURMA " +
-                "join Turma_De_Aluno on ID = ID_TURMA " +
-                "join ALUNO on MATRICULA_ALUNO = MATRICULA " +
+        String SQL_STATEMENT ="Select ID, MATRICULA_PROFESSOR, ID_CURSO" +
+                "where ID = ? " +
                 "order by ID";
         try {
             stmt = Conexao.getCon().prepareStatement(SQL_STATEMENT);
@@ -117,6 +115,17 @@ public class TurmaDAO {
             throw new Exception(e);
         } finally{}
     }
+    
+   public List<Aluno> findAllByTurma(int id) throws Exception{
+       AlunoDAO metodos = null;
+       try {
+            return metodos.findAllByTurma(id);
+       }catch(SQLException sqle){
+            throw new Exception(sqle);
+       }catch(Exception e){
+            throw new Exception(e);
+       }finally{}
+   }
     
     
 

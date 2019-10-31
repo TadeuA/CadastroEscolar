@@ -85,5 +85,9 @@ public class Professor {
     public void setRenda(double renda) {
         this.renda = renda;
     }
-            
+         
+    @Override
+   public String toString(){
+        return this.getNome();
+    }
 }

@@ -122,7 +122,26 @@ public class AlunoDAO {
             throw new Exception(e);
         } finally{}
     }
-
+    
+     public List<Aluno> findAllByTurma(int id) throws Exception{
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String SQL_STATEMENT ="Select Aluno.* from ALUNO " +
+                "join Turma_De_Alunos on MATRICULA = MATRICULA_ALUNO " +
+                "where ID_Turma = " + id +
+                " order by Nome";
+        try {
+            stmt = Conexao.getCon().prepareStatement(SQL_STATEMENT);
+            rs = stmt.executeQuery();
+            AlunoDAO funcoes;
+            return carregarMultiplosResultados(rs);
+        }catch(SQLException sqle){
+            throw new Exception(sqle);
+        } catch(Exception e){
+            throw new Exception(e);
+        } finally{}
+    }
+    
     private List<Aluno> carregarMultiplosResultados(ResultSet rs) throws SQLException{
         List<Aluno> resultList = new ArrayList<Aluno>();
         while (rs.next()) {

@@ -56,5 +56,8 @@ public class Curso {
         this.id = id;
     }
     
-    
+    @Override
+    public String toString(){
+        return this.getNome();
+    }
 }

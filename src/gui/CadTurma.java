@@ -5,17 +5,75 @@
  */
 package gui;
 
+import dao.AlunoDAO;
+import dao.CursoDAO;
+import dao.ProfessorDAO;
+import dao.TurmaDAO;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import model.Aluno;
+import model.Curso;
+import model.Professor;
+import model.Turma;
+
 /**
  *
  * @author tadeu
  */
 public class CadTurma extends javax.swing.JFrame {
-
+    TurmaDAO dao = new TurmaDAO();
+    Turma turma = new Turma();
+    Aluno aluno = new Aluno();
     /**
      * Creates new form CadTurma
      */
-    public CadTurma() {
+    
+    private void preencherCBCurso() throws Exception{
+        CursoDAO c = new CursoDAO();
+        List<Curso> cursos = new ArrayList();
+        try{
+             cursos = c.findAll();
+             cbcurso.removeAllItems();
+             cbcurso.addItem("<Selecione uma opção>");
+             for(Curso curso : cursos){
+                cbcurso.addItem(curso);
+             }
+        }catch(Exception ex) {
+            Logger.getLogger(CadAlunos.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
+    }
+    
+    private void preencherCBProfessor() throws Exception{
+        ProfessorDAO p = new ProfessorDAO();
+        List<Professor> professores = new ArrayList();
+        try{
+             professores = p.findAll();
+             cbProfessor.removeAllItems();
+             cbProfessor.addItem("<Selecione uma opção>");
+             for(Professor professor : professores){
+                cbProfessor.addItem(professor);
+             }
+        }catch(Exception ex) {
+            Logger.getLogger(CadAlunos.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
+    }
+    
+    public CadTurma() throws Exception {
         initComponents();
+        try{
+            preencherCBProfessor();
+            preencherCBCurso();
+        }catch(Exception ex) {
+            Logger.getLogger(CadAlunos.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
 
     /**
@@ -29,24 +87,28 @@ public class CadTurma extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jComboBox1 = new javax.swing.JComboBox();
-        jTextField1 = new javax.swing.JTextField();
+        cbProfessor = new javax.swing.JComboBox();
+        tfId = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        jComboBox2 = new javax.swing.JComboBox();
-        jButton1 = new javax.swing.JButton();
+        cbcurso = new javax.swing.JComboBox();
+        bCriar = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        bExcluir = new javax.swing.JButton();
+        bAtualizar = new javax.swing.JButton();
+        bPesquisar = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        tfMatriculaPesquisa = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        tAlunoPesquisa = new javax.swing.JTable();
+        bPesquisarAluno = new javax.swing.JButton();
+        bInserir = new javax.swing.JButton();
+        bRemover = new javax.swing.JButton();
+        tAlunos = new javax.swing.JScrollPane();
+        tLista = new javax.swing.JTable();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        tTurma = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -54,31 +116,59 @@ public class CadTurma extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Dados únicos"));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbProfessor.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<Selecione uma opção>", "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        tfId.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                tfIdActionPerformed(evt);
             }
         });
 
         jLabel1.setText("ID:");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbcurso.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<Selecione uma opção>", "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jButton1.setText("Criar Turma");
+        bCriar.setText("Criar Turma");
+        bCriar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bCriarActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText("Professor:");
 
         jLabel3.setText("Curso:");
+
+        bExcluir.setText("Excluir");
+        bExcluir.setEnabled(false);
+        bExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bExcluirActionPerformed(evt);
+            }
+        });
+
+        bAtualizar.setText("Atualizar");
+        bAtualizar.setEnabled(false);
+        bAtualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bAtualizarActionPerformed(evt);
+            }
+        });
+
+        bPesquisar.setText("Pesquisar");
+        bPesquisar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bPesquisarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
@@ -90,39 +180,52 @@ public class CadTurma extends javax.swing.JFrame {
                                     .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboBox2, 0, 273, Short.MAX_VALUE)
-                            .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jButton1))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(cbcurso, 0, 273, Short.MAX_VALUE)
+                            .addComponent(cbProfessor, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(tfId, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(bAtualizar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(bExcluir))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(bPesquisar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(bCriar, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(50, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(8, 8, 8)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tfId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbProfessor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbcurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(bCriar)
+                    .addComponent(bPesquisar))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(bAtualizar)
+                    .addComponent(bExcluir))
+                .addContainerGap())
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Inserir Aluno"));
 
         jLabel4.setText("Matricula:");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tAlunoPesquisa.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null}
+
             },
             new String [] {
                 "Matricula", "Nome"
@@ -136,12 +239,31 @@ public class CadTurma extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        jTable1.setToolTipText("");
-        jScrollPane1.setViewportView(jTable1);
+        tAlunoPesquisa.setToolTipText("");
+        jScrollPane1.setViewportView(tAlunoPesquisa);
 
-        jButton2.setText("Pesquisar");
+        bPesquisarAluno.setText("Pesquisar");
+        bPesquisarAluno.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bPesquisarAlunoActionPerformed(evt);
+            }
+        });
 
-        jButton3.setText("Inserir");
+        bInserir.setText("Inserir");
+        bInserir.setEnabled(false);
+        bInserir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bInserirActionPerformed(evt);
+            }
+        });
+
+        bRemover.setText("Remover da Turma");
+        bRemover.setEnabled(false);
+        bRemover.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bRemoverActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -149,16 +271,18 @@ public class CadTurma extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton3)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(jPanel3Layout.createSequentialGroup()
-                            .addComponent(jLabel4)
-                            .addGap(47, 47, 47)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton2))
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 389, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(bRemover)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(bInserir))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(47, 47, 47)
+                        .addComponent(tfMatriculaPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(bPesquisarAluno))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 389, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(31, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -167,12 +291,14 @@ public class CadTurma extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2))
+                    .addComponent(tfMatriculaPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(bPesquisarAluno))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(bInserir)
+                    .addComponent(bRemover))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -191,15 +317,15 @@ public class CadTurma extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        tLista.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null}
+
             },
             new String [] {
                 "Matricula", "Nome"
@@ -213,11 +339,11 @@ public class CadTurma extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(jTable2);
+        tAlunos.setViewportView(tLista);
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+        tTurma.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null}
+
             },
             new String [] {
                 "ID", "Professor", "Curso"
@@ -231,7 +357,7 @@ public class CadTurma extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        jScrollPane3.setViewportView(jTable3);
+        jScrollPane3.setViewportView(tTurma);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -242,32 +368,164 @@ public class CadTurma extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tAlunos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(22, 22, 22)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 327, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(42, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(21, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(tAlunos, javax.swing.GroupLayout.PREFERRED_SIZE, 327, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void tfIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfIdActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_tfIdActionPerformed
 
+    private void bExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bExcluirActionPerformed
+        turma = dao.getTurmaPorId(Integer.parseInt(tfId.getText()));
+        dao.remover(turma);
+        limparCampos();
+    }//GEN-LAST:event_bExcluirActionPerformed
+
+    private void bPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bPesquisarActionPerformed
+        turma = dao.getTurmaPorId(Integer.parseInt(tfId.getText()));
+        tabelaTurma(turma);
+        try {
+            atualizarLista();
+            limparCampos();
+            ativarbtn();
+        } catch (Exception ex) {
+            Logger.getLogger(CadTurma.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }//GEN-LAST:event_bPesquisarActionPerformed
+
+    private void bCriarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCriarActionPerformed
+        if(cbcurso.getSelectedItem().equals("<Selecione uma opção>") || cbProfessor.getSelectedItem().equals("<Selecione uma opção>") ){
+            JOptionPane.showMessageDialog(null, "Entrada(s) invalida(s)! Por favor revise!");
+        }else{
+        
+            Turma t = new Turma();
+            t.setId(Integer.parseInt(tfId.getText()));
+            t.setCurso((Curso) cbcurso.getSelectedItem());
+            t.setProfessor((Professor) cbProfessor.getSelectedItem());
+            dao.inserir(t);
+            tabelaTurma(t);
+            turma = t;
+            limparCampos();
+            ativarbtn();
+        }
+        
+        
+    }//GEN-LAST:event_bCriarActionPerformed
+
+    private void bPesquisarAlunoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bPesquisarAlunoActionPerformed
+        AlunoDAO aDAO = new AlunoDAO();
+        try {
+            Aluno a = new Aluno();
+            a = aDAO.getAlunoPorId(turma.getId());
+            tabelaAluno(a);
+            aluno = a;
+            bRemover.setEnabled(true);
+            bInserir.setEnabled(true);
+        } catch (Exception ex) {
+            Logger.getLogger(CadTurma.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_bPesquisarAlunoActionPerformed
+
+    private void bInserirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bInserirActionPerformed
+        dao.inserirAluno(turma, aluno); 
+        try {
+            atualizarLista();
+            limparCampos();
+        } catch (Exception ex) {
+            Logger.getLogger(CadTurma.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       
+    }//GEN-LAST:event_bInserirActionPerformed
+
+    private void bRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bRemoverActionPerformed
+        dao.removerAluno(turma, aluno.getMatricula());
+        limparCampos();
+    }//GEN-LAST:event_bRemoverActionPerformed
+
+    private void bAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAtualizarActionPerformed
+        if(cbcurso.getSelectedItem().equals("<Selecione uma opção>") || cbProfessor.getSelectedItem().equals("<Selecione uma opção>") ){
+            JOptionPane.showMessageDialog(null, "Entrada(s) invalida(s)! Por favor revise!");
+        }else{
+            turma.setProfessor((Professor) cbProfessor.getSelectedItem());
+            turma.setCurso((Curso) cbcurso.getSelectedItem());
+            dao.atualizar(turma);
+            tabelaTurma(turma);
+            try {
+                atualizarLista();
+            } catch (Exception ex) {
+                Logger.getLogger(CadTurma.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }   
+    }//GEN-LAST:event_bAtualizarActionPerformed
+
+    private void atualizarLista() throws Exception{
+        AlunoDAO aDAO = new AlunoDAO();
+        List<Aluno> alunos = new ArrayList();
+        try {
+            alunos = aDAO.findAllByTurma(turma.getId());
+            DefaultTableModel modelo = modeloAluno();
+            for(Aluno aluno : alunos){
+                modelo.addRow(new String[]{Integer.toString(aluno.getMatricula()), aluno.getNome()});
+            }
+            tLista.setModel(modelo);
+        } catch (Exception ex) {
+            Logger.getLogger(CadTurma.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    private void limparCampos(){
+        tfId.setText(null);
+        tfMatriculaPesquisa.setText(null);
+        cbcurso.setSelectedItem("<Selecione uma opção>");
+        cbProfessor.setSelectedItem("<Selecione uma opção>");
+        
+    }
+    
+    private void tabelaTurma(Turma t){
+        DefaultTableModel modelo = new DefaultTableModel();
+        modelo.addColumn("ID");
+        modelo.addColumn("Professor");
+        modelo.addColumn("Curso");
+        modelo.addRow(new String[]{Integer.toString(t.getId()), t.getProfessor().getNome(), t.getCurso().getNome()});
+        tTurma.setModel(modelo);
+    }
+    
+    private DefaultTableModel modeloAluno(){
+        DefaultTableModel modelo = new DefaultTableModel();
+        modelo.addColumn("Matricula");
+        modelo.addColumn("Nome");
+        return modelo;
+    }
+    
+    private void tabelaAluno(Aluno a){
+        DefaultTableModel modelo = modeloAluno();
+        modelo.addRow(new String[]{Integer.toString(a.getMatricula()), a.getNome()});
+        tAlunoPesquisa.setModel(modelo);
+    }
+    
+    private void ativarbtn(){
+        bExcluir.setEnabled(true);
+        bAtualizar.setEnabled(true);
+    }
+ 
     /**
      * @param args the command line arguments
      */
@@ -298,17 +556,25 @@ public class CadTurma extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new CadTurma().setVisible(true);
+                try {
+                    new CadTurma().setVisible(true);
+                } catch (Exception ex) {
+                    Logger.getLogger(CadTurma.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JComboBox jComboBox1;
-    private javax.swing.JComboBox jComboBox2;
+    private javax.swing.JButton bAtualizar;
+    private javax.swing.JButton bCriar;
+    private javax.swing.JButton bExcluir;
+    private javax.swing.JButton bInserir;
+    private javax.swing.JButton bPesquisar;
+    private javax.swing.JButton bPesquisarAluno;
+    private javax.swing.JButton bRemover;
+    private javax.swing.JComboBox cbProfessor;
+    private javax.swing.JComboBox cbcurso;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -317,12 +583,12 @@ public class CadTurma extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable3;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTable tAlunoPesquisa;
+    private javax.swing.JScrollPane tAlunos;
+    private javax.swing.JTable tLista;
+    private javax.swing.JTable tTurma;
+    private javax.swing.JTextField tfId;
+    private javax.swing.JTextField tfMatriculaPesquisa;
     // End of variables declaration//GEN-END:variables
 }
